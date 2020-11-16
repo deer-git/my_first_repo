@@ -19,3 +19,6 @@ var str = nombre.charAt(1) + nombre.charAt(2);
 var str1 = nombre.substr(1,2)
 
 //Reto = muestra al usuario cual es la ultima letra de su nombre
+
+
+
