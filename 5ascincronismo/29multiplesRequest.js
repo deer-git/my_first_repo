@@ -19,7 +19,7 @@ function obtenerPersonaje(id) {
     obtenerPersonaje(i)
 } */
 
-/* ahora llamaremos en orden, pero
+/* ahora llamaremos una funcion ascincrona, en orden, pero
 el asincronismo nos los mandara dependiendo el servidor */
 obtenerPersonaje(1)
 obtenerPersonaje(2)
