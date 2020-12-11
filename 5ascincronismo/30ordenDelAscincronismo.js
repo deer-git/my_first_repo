@@ -6,7 +6,7 @@ const PEOPLE_URL = 'people/:id'
 
 const opts = { crossDomain: true}
 
-/*#2 esta funcion la recortamos y la ejecutamos como anonima
+/*#2 esta funcion la recortamos y la ejecutamos como anonima en $.get()
 
 const onPeopleResponse = function (persona){
     console.log(`Hola, yo soy ${persona.name}`)
