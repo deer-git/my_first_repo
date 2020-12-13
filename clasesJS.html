@@ -107,11 +107,12 @@
         constructor() {
           this.inicializar()
           this.generarSecuencia()
+          this.siguienteNivel()   
         }
 
         inicializar() {
           btnEmpezar.classList.add('hide')
-          this.nivel = 1
+          this.nivel = 1     //podemos cambiar el nivel a 7 ej para que prendan 7 colores
           this.colores = {
               celeste,   //js entiende si el nombre es igual celeste:celeste  === celeste
               violeta,
@@ -122,6 +123,40 @@
 
         generarSecuencia() {
             this.secuencia = new Array(10).fill(0).map(n => Math.floor(Math.random() * 4))
+        }
+//#1
+        siguienteNivel() {
+            this.iluminarSecuencia()
+        }
+//#3
+        transformarNumeroAColor(numero) {
+            switch (numero) {
+                case 0:
+                    return 'celeste'
+                case 1:
+                    return 'violeta'
+                case 2:
+                    return 'naranja'
+                case 3:
+                    return 'verde'
+            }
+        }
+//#2
+        iluminarSecuencia(){
+            for (let i = 0; i < this.nivel; i ++) {
+//#4
+                const color = this.transformarNumeroAColor(this.secuencia[i])
+                setTimeout(() => this.iluminarColor(color), 1000 * i)
+            }
+        }
+//#5
+        iluminarColor(color) {
+            this.colores[color].classList.add('light')
+            setTimeout(() => this.apagarColor(color), 350)
+        }
+
+        apagarColor(color) {
+            this.colores[color].classList.remove('light')
         }
       }
 
