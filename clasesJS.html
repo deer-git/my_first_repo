@@ -111,6 +111,7 @@
         }
 
         inicializar() {
+/*#4*/    this.elegirColor = this.elegirColor.bind(this)
           btnEmpezar.classList.add('hide')
           this.nivel = 1     //podemos cambiar el nivel a 7 ej para que prendan 7 colores
           this.colores = {
@@ -124,11 +125,12 @@
         generarSecuencia() {
             this.secuencia = new Array(10).fill(0).map(n => Math.floor(Math.random() * 4))
         }
-//#1
+
         siguienteNivel() {
             this.iluminarSecuencia()
+/*#1*/      this.agregarEventosClick()
         }
-//#3
+
         transformarNumeroAColor(numero) {
             switch (numero) {
                 case 0:
@@ -141,15 +143,15 @@
                     return 'verde'
             }
         }
-//#2
+
         iluminarSecuencia(){
             for (let i = 0; i < this.nivel; i ++) {
-//#4
+
                 const color = this.transformarNumeroAColor(this.secuencia[i])
                 setTimeout(() => this.iluminarColor(color), 1000 * i)
             }
         }
-//#5
+
         iluminarColor(color) {
             this.colores[color].classList.add('light')
             setTimeout(() => this.apagarColor(color), 350)
@@ -157,6 +159,23 @@
 
         apagarColor(color) {
             this.colores[color].classList.remove('light')
+        }
+//#2
+        agregarEventosClick() {      //parametros: indicamos nombre del evento click y la accion a ejecutar
+          this.colores.celeste.addEventListener('click', this.elegirColor)
+          this.colores.verde.addEventListener('click', this.elegirColor)
+          this.colores.violeta.addEventListener('click', this.elegirColor)
+          this.colores.naranja.addEventListener('click', this.elegirColor)
+       /* this.colores.celeste.addEventListener('click', this.elegirColor.bind(this))
+          this.colores.verde.addEventListener('click', this.elegirColor.bind(this))
+          this.colores.violeta.addEventListener('click', this.elegirColor.bind(this))
+          this.colores.naranja.addEventListener('click', this.elegirColor.bind(this)) 
+          
+          .bind(this)  ahora esta especificado en la funcion inicializar()*/
+        }
+//#3   Cuando utilizamos event listeners las funciones que se llaman, lo hacen con un parametro   ev
+        elegirColor(ev) {
+            console.log(this)  //ev o this. este this hace referencia NO al boton si no a la funcion a la que pertenece = juego
         }
       }
 
