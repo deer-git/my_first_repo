@@ -102,18 +102,20 @@
       const naranja = document.getElementById('naranja')
       const verde = document.getElementById('verde')
       const btnEmpezar = document.getElementById('btnEmpezar')
+/*#6*/const ULTIMO_NIVEL = 10       //podemos ajustar el nivel
 
       class Juego {
         constructor() {
           this.inicializar()
           this.generarSecuencia()
-          this.siguienteNivel()   
+/*#12*/   setTimeout(this.siguienteNivel, 500)
         }
 
         inicializar() {
-/*#4*/    this.elegirColor = this.elegirColor.bind(this)
+/*#11*/   this.siguienteNivel = this.siguienteNivel.bind(this)    //de esta forma this siempre estara atada a juego() sin importar quien la llame como timeSetout
+          this.elegirColor = this.elegirColor.bind(this)
           btnEmpezar.classList.add('hide')
-          this.nivel = 1     //podemos cambiar el nivel a 7 ej para que prendan 7 colores
+          this.nivel = 1
           this.colores = {
               celeste,   //js entiende si el nombre es igual celeste:celeste  === celeste
               violeta,
@@ -121,14 +123,15 @@
               verde
           }
         }
-
+//#7 new Array(10) -->  (ULTIMO_NIVEL)
         generarSecuencia() {
-            this.secuencia = new Array(10).fill(0).map(n => Math.floor(Math.random() * 4))
+            this.secuencia = new Array(ULTIMO_NIVEL).fill(0).map(n => Math.floor(Math.random() * 4))
         }
 
         siguienteNivel() {
+/*#4*/      this.subnivel = 0
             this.iluminarSecuencia()
-/*#1*/      this.agregarEventosClick()
+            this.agregarEventosClick()
         }
 
         transformarNumeroAColor(numero) {
@@ -141,6 +144,19 @@
                     return 'naranja'
                 case 3:
                     return 'verde'
+            }
+        }
+//#2
+        transformarColorANumero(color) {
+            switch (color) {
+                case 'celeste':
+                    return 0
+                case 'violeta':
+                    return 1
+                case 'naranja':
+                    return 2
+                case 'verde':
+                    return 3
             }
         }
 
@@ -160,24 +176,43 @@
         apagarColor(color) {
             this.colores[color].classList.remove('light')
         }
-//#2
-        agregarEventosClick() {      //parametros: indicamos nombre del evento click y la accion a ejecutar
+
+        agregarEventosClick() {
           this.colores.celeste.addEventListener('click', this.elegirColor)
           this.colores.verde.addEventListener('click', this.elegirColor)
           this.colores.violeta.addEventListener('click', this.elegirColor)
           this.colores.naranja.addEventListener('click', this.elegirColor)
-       /* this.colores.celeste.addEventListener('click', this.elegirColor.bind(this))
-          this.colores.verde.addEventListener('click', this.elegirColor.bind(this))
-          this.colores.violeta.addEventListener('click', this.elegirColor.bind(this))
-          this.colores.naranja.addEventListener('click', this.elegirColor.bind(this)) 
-          
-          .bind(this)  ahora esta especificado en la funcion inicializar()*/
         }
-//#3   Cuando utilizamos event listeners las funciones que se llaman, lo hacen con un parametro   ev
+//#9
+        eliminarEventosClick() {
+          this.colores.celeste.removeEventListener('click', this.elegirColor)
+          this.colores.verde.removeEventListener('click', this.elegirColor)
+          this.colores.violeta.removeEventListener('click', this.elegirColor)
+          this.colores.naranja.removeEventListener('click', this.elegirColor)
+        }
+
         elegirColor(ev) {
-            console.log(this)  //ev o this. este this hace referencia NO al boton si no a la funcion a la que pertenece = juego
+            //console.log(this)
+/*#1*/    const nombreColor = ev.target.dataset.color   //este atributo sale del gameboard inpector-data
+/*#3*/    const numeroColor = this.transformarColorANumero(nombreColor)
+          this.iluminarColor(nombreColor)
+/*#5*/    if (numeroColor === this.secuencia[this.subnivel]) {
+              this.subnivel++
+              if (this.subnivel === this.nivel){   //aqui pasa de nivel
+                this.nivel++
+                this.eliminarEventosClick()
+/*#8*/          if (this.nivel === (ULTIMO_NIVEL + 1)) {
+                    //Gana
+                } else {
+/*#10*/             setTimeout(this.siguienteNivel, 2000)   //aqui no invocamos a la funcion, solo le decimos la rferencia al usar timeout
+                }                                         //ahora this hace referencia a window debido a timeout, para solucionar el bug invocamos.bind
+              }                                           //pero enves de hacelo aqui lo hacemos al inicializar() la funcion this.siguienteNivel.bind(this)
+          } else {
+            // Perdio
+          }
         }
       }
+
 
       function empezarJuego() {
         //var juego = new Juego()
