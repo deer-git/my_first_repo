@@ -82,6 +82,11 @@
       .hide {
         display: none;
       }
+/* #2 */
+      * {
+        font-family: 'Arial';
+      }
+
     </style>
   </head>
   <body>
@@ -95,26 +100,31 @@
       <div id="verde" class="color verde right" data-color="verde"></div>
       <button id="btnEmpezar" class="btn-start" onclick="empezarJuego()">Empezar a jugar!</button>
     </div>
+<!-- #1 este scripr es para poder usar sweetalert y se prueba con swal ('prueba') -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js" integrity="sha512-AA1Bzp5Q0K1KanKKmvN/4d3IRKVlv9PYgwFPvm32nPO6QS8yH1HO7LbgB1pgiOxPtfeg5zEn2ba64MUcqJx6CA==" crossorigin="anonymous"></script>
     <script>
-
       const celeste = document.getElementById('celeste')
       const violeta = document.getElementById('violeta')
       const naranja = document.getElementById('naranja')
       const verde = document.getElementById('verde')
       const btnEmpezar = document.getElementById('btnEmpezar')
-/*#6*/const ULTIMO_NIVEL = 10       //podemos ajustar el nivel
+      const ULTIMO_NIVEL = 10       //podemos ajustar el nivel
+
+      //swal('F T W')
 
       class Juego {
         constructor() {
+/*#5*/    this.inicializar = this.inicializar.bind(this)
           this.inicializar()
           this.generarSecuencia()
-/*#12*/   setTimeout(this.siguienteNivel, 500)
+          setTimeout(this.siguienteNivel, 500)
         }
 
         inicializar() {
-/*#11*/   this.siguienteNivel = this.siguienteNivel.bind(this)    //de esta forma this siempre estara atada a juego() sin importar quien la llame como timeSetout
+          this.siguienteNivel = this.siguienteNivel.bind(this)    //de esta forma this siempre estara atada a juego() sin importar quien la llame como timeSetout
           this.elegirColor = this.elegirColor.bind(this)
-          btnEmpezar.classList.add('hide')
+/*#6*/    this.toggleBtnEmpezar()             //toggle es como si fuera un switch
+//        btnEmpezar.classList.add('hide')
           this.nivel = 1
           this.colores = {
               celeste,   //js entiende si el nombre es igual celeste:celeste  === celeste
@@ -123,13 +133,21 @@
               verde
           }
         }
-//#7 new Array(10) -->  (ULTIMO_NIVEL)
+//#7
+        toggleBtnEmpezar() {
+          if (btnEmpezar.classList.contains('hide')) {
+            btnEmpezar.classList.remove('hide')
+          } else {
+            btnEmpezar.classList.add('hide')
+          }
+        }
+
         generarSecuencia() {
             this.secuencia = new Array(ULTIMO_NIVEL).fill(0).map(n => Math.floor(Math.random() * 4))
         }
 
         siguienteNivel() {
-/*#4*/      this.subnivel = 0
+            this.subnivel = 0
             this.iluminarSecuencia()
             this.agregarEventosClick()
         }
@@ -146,7 +164,7 @@
                     return 'verde'
             }
         }
-//#2
+
         transformarColorANumero(color) {
             switch (color) {
                 case 'celeste':
@@ -183,7 +201,7 @@
           this.colores.violeta.addEventListener('click', this.elegirColor)
           this.colores.naranja.addEventListener('click', this.elegirColor)
         }
-//#9
+
         eliminarEventosClick() {
           this.colores.celeste.removeEventListener('click', this.elegirColor)
           this.colores.verde.removeEventListener('click', this.elegirColor)
@@ -193,23 +211,41 @@
 
         elegirColor(ev) {
             //console.log(this)
-/*#1*/    const nombreColor = ev.target.dataset.color   //este atributo sale del gameboard inpector-data
-/*#3*/    const numeroColor = this.transformarColorANumero(nombreColor)
+          const nombreColor = ev.target.dataset.color   //este atributo sale del gameboard inpector-data
+          const numeroColor = this.transformarColorANumero(nombreColor)
           this.iluminarColor(nombreColor)
-/*#5*/    if (numeroColor === this.secuencia[this.subnivel]) {
+          if (numeroColor === this.secuencia[this.subnivel]) {
               this.subnivel++
               if (this.subnivel === this.nivel){   //aqui pasa de nivel
                 this.nivel++
                 this.eliminarEventosClick()
-/*#8*/          if (this.nivel === (ULTIMO_NIVEL + 1)) {
-                    //Gana
+                if (this.nivel === (ULTIMO_NIVEL + 1)) {
+/* #3 */            this.ganoElJuego()
                 } else {
-/*#10*/             setTimeout(this.siguienteNivel, 2000)   //aqui no invocamos a la funcion, solo le decimos la rferencia al usar timeout
+                   setTimeout(this.siguienteNivel, 2000)   //aqui no invocamos a la funcion, solo le decimos la rferencia al usar timeout
                 }                                         //ahora this hace referencia a window debido a timeout, para solucionar el bug invocamos.bind
               }                                           //pero enves de hacelo aqui lo hacemos al inicializar() la funcion this.siguienteNivel.bind(this)
           } else {
-            // Perdio
+              this.perdioElJuego()
           }
+        }
+/* #4 */
+        ganoElJuego() {
+          //swal('Ganaste el juego!!!')   swal don devuelve una promesa
+          swal('Platzi', 'Felicitaciones, ganaste el juego', 'success')
+            .then(this.inicializar)     //esta es una forma prolija de escribir la promesa, para evitar error de this apuntando a window usamos bind
+         /* .then(() => {
+               this.inicializar()
+          }) */
+        }
+
+        perdioElJuego() {
+          //swal('Ganaste el juego!!!')   swal don devuelve una promesa
+          swal('Platzi', 'Lo lamentamos, perdiste :( ', 'error')
+          .then(() => {
+            this.eliminarEventosClick()
+            this.inicializar()
+          })
         }
       }
 
